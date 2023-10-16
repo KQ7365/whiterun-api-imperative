@@ -36,7 +36,7 @@ class JSONServer(HandleRequests):
 
         elif url["requested_resource"] == "ships":
             if url["pk"] != 0:
-                response_body = retrieve_ship(url["pk"])
+                response_body = retrieve_ship(url)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
             response_body = list_ships(url)
