@@ -53,6 +53,21 @@ def list_ships(url):
             JOIN Hauler h
                 ON h.id = s.hauler_id
             """)
+            query_results = db_cursor.fetchall()
+            ships=[]
+            for row in query_results:
+                hauler = {
+                "id": row['haulerId'],
+                "name": row['haulerName'],
+                "dock_id": row["dock_id"]
+            }
+                ship = {
+                "id": row['id'],
+                "name": row['name'],
+                "hauler_id": row["hauler_id"],
+                "hauler": hauler
+            }
+                ships.append(ship)
         # Write the SQL query to get the information you want
         else:
             db_cursor.execute("""
@@ -62,12 +77,14 @@ def list_ships(url):
                 s.hauler_id
             FROM Ship s
             """)
-        query_results = db_cursor.fetchall()
+            query_results = db_cursor.fetchall()
+            ships=[]
+            for row in query_results:
+                ships.append(dict(row))
+
 
         # Initialize an empty list and then add each dictionary to it
-        ships=[]
-        for row in query_results:
-            ships.append(dict(row))
+
 
         # Serialize Python list to JSON encoded string
         serialized_ships = json.dumps(ships)
