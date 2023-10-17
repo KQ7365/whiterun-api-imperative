@@ -112,12 +112,15 @@ class JSONServer(HandleRequests):
 
     def do_POST(self):
         """Handle POST requests from a client"""
+        #?Only need url for POST
         url = self.parse_url(self.path)
 
+        #?Following are Python methods added by admin
         content_len = int(self.headers.get('content-length', 0))
         request_body = self.rfile.read(content_len)
         request_body = json.loads(request_body)
         
+        #?conditional returning error if POST failed
         if url["requested_resource"] == "ships":
             successfully_updated = add_ship(request_body)
             if successfully_updated:
