@@ -31,7 +31,7 @@ class JSONServer(HandleRequests):
                 response_body = retrieve_hauler(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-            response_body = list_haulers()
+            response_body = list_haulers(url)
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         elif url["requested_resource"] == "ships":
