@@ -41,6 +41,7 @@ def list_haulers(url):
     with sqlite3.connect("./shipping.db") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
+
         if "_embed" in url['query_params']:
             db_cursor.execute("""
             SELECT
@@ -52,31 +53,29 @@ def list_haulers(url):
                 s.hauler_id           
             FROM Hauler h
             JOIN Ship s
-                ON s.hauler_id = h.id 
+            ON s.hauler_id = h.id 
             """)
             query_results = db_cursor.fetchall()
-            haulers = []
-            for row in query_results:
-                ships_list = []
-                hauler = {
-                    "id": row['id'],
-                    "name": row['name'],
-                    "dock_id": row["dock_id"],
-                    "ships": ships_list
-            }
-                for row in query_results:
-                    if row['hauler_id'] == hauler['id']:
-                        ship = {
-                            "id": row['shipId'],
-                            "name": row['shipName'],
-                            "hauler_id": row["hauler_id"],
-                }
-                        ships_list.append(ship)
-           
-                haulers.append(hauler)
-            
 
-        # Write the SQL query to get the information you want
+            haulers = {}
+            for row in query_results:
+                hauler_id = row['id']
+                if hauler_id not in haulers:
+                    haulers[hauler_id] = {
+                        "id": row['id'],
+                        "name": row['name'],
+                        "dock_id": row['dock_id'],
+                        "ships": []
+                    }
+
+                ship = {
+                    "id": row['shipId'],
+                    "name": row['shipName'],
+                    "hauler_id": row['hauler_id']
+                }
+                haulers[hauler_id]["ships"].append(ship)
+
+            serialized_haulers = json.dumps(list(haulers.values()))
         else:
             db_cursor.execute("""
             SELECT
@@ -86,14 +85,8 @@ def list_haulers(url):
             FROM Hauler h
             """)
             query_results = db_cursor.fetchall()
-
-        # Initialize an empty list and then add each dictionary to it
-            haulers=[]
-            for row in query_results:
-                haulers.append(dict(row))
-
-            # Serialize Python list to JSON encoded string
-    serialized_haulers = json.dumps(haulers)
+            haulers = [dict(row) for row in query_results]
+            serialized_haulers = json.dumps(haulers)
 
     return serialized_haulers
 
