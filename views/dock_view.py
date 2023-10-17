@@ -1,6 +1,22 @@
 import sqlite3
 import json
 
+
+def add_dock(dock_data):
+    with sqlite3.connect("./shipping.db") as conn:
+        db_cursor = conn.cursor()
+
+        #?executing SQL query
+        db_cursor.execute("""
+            INSERT INTO 'Dock' VALUES (null, ?, ?)
+""", (dock_data['location'], dock_data['capacity']))
+
+        #?retrieving a single row in SQL query
+        single_dock = db_cursor.fetchone()
+        #?legible data/converts to JSON format(dump = dumpstring)
+        serialized_dock = json.dumps(single_dock)
+
+        return serialized_dock
 def update_dock(id, dock_data):
     with sqlite3.connect("./shipping.db") as conn:
         db_cursor = conn.cursor()

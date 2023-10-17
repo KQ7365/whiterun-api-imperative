@@ -13,7 +13,7 @@ def add_ship(ship_data):
 
         #?retrieving a single row in SQL query
         single_ship = db_cursor.fetchone()
-        #?legible data/converts to JSON format(dump = string)
+        #?legible data/converts to JSON format(dump = dumpstring)
         serialized_ship = json.dumps(single_ship)
 
     return serialized_ship
