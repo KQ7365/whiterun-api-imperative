@@ -1,6 +1,22 @@
 import sqlite3
 import json
 
+
+def add_hauler(hauler_data):
+    with sqlite3.connect("./shipping.db") as conn:
+        db_cursor = conn.cursor()
+
+        #?executing SQL query
+        db_cursor.execute("""
+            INSERT INTO 'Hauler' VALUES (null, ?, ?)
+""", (hauler_data['name'], hauler_data['dock_id']))
+
+        #?retrieving a single row in SQL query
+        single_hauler = db_cursor.fetchone()
+        #?legible data/converts to JSON format(dump = dumpstring)
+        serialized_hauler = json.dumps(single_hauler)
+
+    return serialized_hauler
 def update_hauler(id, hauler_data):
     with sqlite3.connect("./shipping.db") as conn:
         db_cursor = conn.cursor()
