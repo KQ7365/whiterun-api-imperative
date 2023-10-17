@@ -44,22 +44,26 @@ def list_haulers(url):
 
         if "_embed" in url['query_params']:
             db_cursor.execute("""
-            SELECT
-                h.id,
-                h.name,
-                h.dock_id,
-                s.id shipId,
-                s.name shipName,
-                s.hauler_id           
-            FROM Hauler h
-            JOIN Ship s
-            ON s.hauler_id = h.id 
+                SELECT
+                    h.id,
+                    h.name,
+                    h.dock_id,
+                    s.id shipId,
+                    s.name shipName,
+                    s.hauler_id           
+                FROM Hauler h
+                JOIN Ship s
+                ON s.hauler_id = h.id 
+                ORDER BY h.id
             """)
             query_results = db_cursor.fetchall()
 
-            haulers = {}
+            haulers = {} #? Initializes an empty dictionary
             for row in query_results:
                 hauler_id = row['id']
+                #? Logic below checks if the hauler exists in the haulers dictionary.
+                    #? If it isn't, adds the hauler and adds the associated ship to the ships list in the hauler dictionary
+                    #? If it already exists, adds the associated ship to the hauler dictionary
                 if hauler_id not in haulers:
                     haulers[hauler_id] = {
                         "id": row['id'],
@@ -73,7 +77,7 @@ def list_haulers(url):
                     "name": row['shipName'],
                     "hauler_id": row['hauler_id']
                 }
-                haulers[hauler_id]["ships"].append(ship)
+                haulers[hauler_id]["ships"].append(ship) #? Adds ship to the correct dictionary
 
             serialized_haulers = json.dumps(list(haulers.values()))
         else:
@@ -85,7 +89,10 @@ def list_haulers(url):
             FROM Hauler h
             """)
             query_results = db_cursor.fetchall()
-            haulers = [dict(row) for row in query_results]
+            # haulers = [dict(row) for row in query_results] #! Shorter syntax
+            haulers = []
+            for row in query_results:
+                haulers.append(dict(row))
             serialized_haulers = json.dumps(haulers)
 
     return serialized_haulers
