@@ -1,6 +1,23 @@
 import sqlite3
 import json
 
+#?POST adding ship method
+def add_ship(ship_data):
+    with sqlite3.connect("./shipping.db") as conn:
+        db_cursor = conn.cursor()
+
+        #?executing SQL query
+        db_cursor.execute("""
+            INSERT INTO 'Ship' VALUES (null, ?, ?)
+""", (ship_data['name'], ship_data['hauler_id']))
+
+        #?retrieving a single row in SQL query
+        single_ship = db_cursor.fetchone()
+        #?legible data/converts to JSON format(dump = string)
+        serialized_ship = json.dumps(single_ship)
+
+    return serialized_ship
+
 def update_ship(id, ship_data):
     with sqlite3.connect("./shipping.db") as conn:
         db_cursor = conn.cursor()
