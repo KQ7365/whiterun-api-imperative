@@ -66,4 +66,27 @@ SELECT
 FROM Hauler h
 JOIN Ship s
 ON s.hauler_id = h.id 
-ORDER BY h.id
+ORDER BY h.id;
+
+SELECT
+    d.id,
+    d.location,
+	d.capacity,
+    h.id haulerId,
+    h.name haulerName,
+    h.dock_id
+FROM Dock d
+JOIN Hauler h
+ON h.dock_id = d.id;
+
+SELECT
+    d.id,
+    d.location,
+	d.capacity,
+    GROUP_CONCAT(h.id) AS haulerId,
+    GROUP_CONCAT(h.name) AS haulerName,
+	GROUP_CONCAT(h.dock_id) AS dockId
+FROM Dock d
+JOIN Hauler h
+ON h.dock_id = d.id
+GROUP BY d.id, d.location;
