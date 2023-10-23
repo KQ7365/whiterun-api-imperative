@@ -49,29 +49,68 @@ def delete_dock(pk):
     return True if number_of_rows_deleted > 0 else False
 
 
-def list_docks():
+def list_docks(url):
     # Open a connection to the database
     with sqlite3.connect("./shipping.db") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
+        if "_embed" in url['query_params']:
+            db_cursor.execute("""
+                SELECT
+                    d.id,
+                    d.location,
+                    d.capacity,
+                    h.id haulerId,
+                    h.name haulerName,
+                    h.dock_id      
+                FROM Dock d
+                JOIN Hauler h
+                ON d.id = h.dock_id
+                ORDER BY d.id;
+            """)
+            query_results = db_cursor.fetchall()
+
+            docks = {} #? Initializes an empty dictionary
+            for row in query_results:
+                dock_id = row['id']
+                #? Logic below checks if the hauler exists in the docks dictionary.
+                    #? If it isn't, adds the hauler and adds the associated hauler to the ships list in the hauler dictionary
+                    #? If it already exists, adds the associated hauler to the hauler dictionary
+                if dock_id not in docks:
+                    docks[dock_id] = {
+                        "id": row['id'],
+                        "location": row['location'],
+                        "capacity": row['capacity'],
+                        "haulers": []
+                    }
+
+                hauler = {
+                    "id": row['haulerId'],
+                    "name": row['haulerName'],
+                    "dock_id": row['dock_id']
+                }
+                docks[dock_id]["haulers"].append(hauler) #? Adds hauler to the correct dictionary
+
+            serialized_docks = json.dumps(list(docks.values()))
         # Write the SQL query to get the information you want
-        db_cursor.execute("""
-        SELECT
-            d.id,
-            d.location,
-            d.capacity
-        FROM Dock d
-        """)
-        query_results = db_cursor.fetchall()
+        else:
+            db_cursor.execute("""
+            SELECT
+                d.id,
+                d.location,
+                d.capacity
+            FROM Dock d
+            """)
+            query_results = db_cursor.fetchall()
 
-        # Initialize an empty list and then add each dictionary to it
-        docks=[]
-        for row in query_results:
-            docks.append(dict(row))
+            # Initialize an empty list and then add each dictionary to it
+            docks=[]
+            for row in query_results:
+                docks.append(dict(row))
 
-        # Serialize Python list to JSON encoded string
-        serialized_docks = json.dumps(docks)
+            # Serialize Python list to JSON encoded string
+            serialized_docks = json.dumps(docks)
 
     return serialized_docks
 

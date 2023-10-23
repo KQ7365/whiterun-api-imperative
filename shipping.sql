@@ -66,4 +66,16 @@ SELECT
 FROM Hauler h
 JOIN Ship s
 ON s.hauler_id = h.id 
-ORDER BY h.id
+ORDER BY h.id;
+
+SELECT
+	d.id,
+	d.location,
+	d.capacity,
+	h.id haulerId,
+	h.name haulerName,
+	h.dock_id      
+FROM Dock d
+JOIN Hauler h
+ON d.id = h.dock_id
+ORDER BY d.id;

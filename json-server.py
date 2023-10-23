@@ -23,7 +23,7 @@ class JSONServer(HandleRequests):
                 response_body = retrieve_dock(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-            response_body = list_docks()
+            response_body = list_docks(url)
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         elif url["requested_resource"] == "haulers":
@@ -39,7 +39,7 @@ class JSONServer(HandleRequests):
                 response_body = retrieve_ship(url)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-            response_body = list_ships(url)
+            response_body = list_ships()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         else:
